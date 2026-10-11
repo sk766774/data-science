@@ -1,0 +1,153 @@
+
+# PYTHON DATA SCIENCE PROJECT
+# STUDENT PERFORMANCE ANALYSIS
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# STEP 1: CREATE DATASET
+data = {
+    "Student": [
+        "Aarav", "Priya", "Rahul", "Neha",
+        "Aman", "Sneha", "Vikash", "Pooja"
+    ],
+    "Math": [78, 92, 45, 67, 30, 88, 56, 39],
+    "English": [85, 88, 50, 72, 35, 91, 48, 42],
+    "Science": [90, 95, 39, 70, 28, 84, 62, 45]
+}
+
+df = pd.DataFrame(data)
+
+print("=" * 65)
+print("       STUDENT PERFORMANCE ANALYSIS PROJECT")
+print("=" * 65)
+
+# STEP 2: DISPLAY ORIGINAL DATA
+print("\n1. ORIGINAL DATASET")
+print(df.to_string(index=False))
+
+# STEP 3: CHECK MISSING VALUES
+print("\n2. MISSING VALUES")
+print(df.isnull().sum())
+
+# STEP 4: DATA CLEANING
+df = df.drop_duplicates()
+df = df.dropna()
+
+# STEP 5: CALCULATE TOTAL AND AVERAGE
+subjects = ["Math", "English", "Science"]
+
+df["Total"] = df[subjects].sum(axis=1)
+df["Average"] = df[subjects].mean(axis=1).round(2)
+
+# STEP 6: CALCULATE GRADE
+def calculate_grade(avg):
+    if avg >= 90:
+        return "A+"
+    elif avg >= 80:
+        return "A"
+    elif avg >= 70:
+        return "B"
+    elif avg >= 60:
+        return "C"
+    elif avg >= 40:
+        return "D"
+    else:
+        return "F"
+
+df["Grade"] = df["Average"].apply(calculate_grade)
+
+# STEP 7: PASS OR FAIL
+df["Result"] = np.where(
+    (df[subjects] >= 33).all(axis=1),
+    "Pass",
+    "Fail"
+)
+
+# STEP 8: DISPLAY FINAL RESULTS
+print("\n3. STUDENT RESULTS")
+print(df.to_string(index=False))
+
+# STEP 9: OVERALL STATISTICS
+print("\n4. OVERALL STATISTICS")
+print("Total Students:", len(df))
+print("Average Total Marks:", round(df["Total"].mean(), 2))
+print("Overall Average Percentage:",
+      round(df["Average"].mean(), 2), "%")
+print("Highest Total Marks:", df["Total"].max())
+print("Lowest Total Marks:", df["Total"].min())
+
+# STEP 10: SUBJECT-WISE ANALYSIS
+print("\n5. SUBJECT-WISE AVERAGE MARKS")
+subject_average = df[subjects].mean().round(2)
+print(subject_average.to_string())
+
+# STEP 11: PASS AND FAIL ANALYSIS
+print("\n6. PASS AND FAIL ANALYSIS")
+pass_count = (df["Result"] == "Pass").sum()
+fail_count = (df["Result"] == "Fail").sum()
+pass_percentage = (pass_count / len(df)) * 100
+
+print("Passed Students:", pass_count)
+print("Failed Students:", fail_count)
+print("Pass Percentage:", round(pass_percentage, 2), "%")
+
+# STEP 12: TOPPER DETAILS
+print("\n7. TOPPER DETAILS")
+topper = df.loc[df["Total"].idxmax()]
+
+print("Student Name:", topper["Student"])
+print("Total Marks:", topper["Total"])
+print("Average Marks:", topper["Average"])
+print("Grade:", topper["Grade"])
+
+# STEP 13: SAVE RESULTS TO CSV
+df.to_csv("student_performance_results.csv", index=False)
+print("\nResults saved to student_performance_results.csv")
+
+# STEP 14: STUDENT MARKS BAR CHART
+plt.figure(figsize=(10, 5))
+plt.bar(df["Student"], df["Total"])
+plt.title("Student-wise Total Marks")
+plt.xlabel("Student Name")
+plt.ylabel("Total Marks out of 300")
+plt.xticks(rotation=30)
+plt.tight_layout()
+plt.savefig("student_marks_chart.png")
+plt.show()
+
+# STEP 15: SUBJECT AVERAGE BAR CHART
+plt.figure(figsize=(7, 5))
+plt.bar(subject_average.index, subject_average.values)
+plt.title("Average Marks by Subject")
+plt.xlabel("Subjects")
+plt.ylabel("Average Marks")
+plt.tight_layout()
+plt.savefig("subject_average_chart.png")
+plt.show()
+
+# STEP 16: PASS AND FAIL PIE CHART
+plt.figure(figsize=(6, 6))
+plt.pie(
+    [pass_count, fail_count],
+    labels=["Pass", "Fail"],
+    autopct="%1.1f%%",
+    startangle=90
+)
+plt.title("Pass and Fail Percentage")
+plt.tight_layout()
+plt.savefig("pass_fail_chart.png")
+plt.show()
+
+# STEP 17: FINAL SUMMARY
+print("\n8. FINAL PROJECT SUMMARY")
+print("Project Name: Student Performance Analysis")
+print("Programming Language: Python")
+print("Domain: Data Science")
+print("Libraries: Pandas, NumPy, Matplotlib")
+print("Total Students:", len(df))
+print("Pass Percentage:", round(pass_percentage, 2), "%")
+print("Topper:", topper["Student"])
+print("\nPROJECT COMPLETED SUCCESSFULLY!")
+print("=" * 65)
